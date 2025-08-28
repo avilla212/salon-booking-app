@@ -1,0 +1,29 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Build artifacts (optional for later tools)
+dist/
+build/
+
+# Test/coverage (optional, if you add tests)
+coverage/
+.nyc_output/
+
+# Docker (if/when you add Docker)
+docker-compose.override.yml
+*.local
