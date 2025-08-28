@@ -1,0 +1,47 @@
+services:
+  db:
+    # pulls image from Docker hub 
+    image: mysql:8
+    container_name: salon-mysql
+    restart: unless-stopped
+    # credentials
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: salon
+      MYSQL_USER: app
+      MYSQL_PASSWORD: apppass
+    # exposes mysql
+      # left side = host, right side = container
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--password=pass", "--user=root"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  
+  # node/express salon-api
+  app:
+    # tells compse how to build the image
+    build:
+      # dir whose contents are sent to the docker daemon
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: salon-api
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ./server/.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    command: sh -c "npx prisma migrate deploy && npx tsx src/server.ts"
+
+volumes:
+  dbdata:
+ 
